@@ -11,13 +11,13 @@ import pipboy_tab_data_maps as dataMap
 import pipboy_tab_data_radio as radio
 
 class Tab_Data:
-	
+
 	name = "DATA"
-	
+
 	class Mode_Quests:
-		
+
 		changed = True
-		
+
 		def __init__(self, *args, **kwargs):
 			self.parent = args[0]
 			self.rootParent = self.parent.rootParent
@@ -28,20 +28,20 @@ class Tab_Data:
 			pageChanged = self.changed
 			self.changed = False
 			if(pageChanged):
-				True				
+				True
 			return self.pageCanvas, pageChanged
-			
+
 		# Called every view changes to this page:
 		def resetPage(self):
 			True
 		# Consume events passed to this page:
 		def ctrlEvents(self,events):
 			True
-			
+
 	class Mode_Misc:
-		
+
 		changed = True
-		
+
 		def __init__(self, *args, **kwargs):
 			self.parent = args[0]
 			self.rootParent = self.parent.rootParent
@@ -52,7 +52,7 @@ class Tab_Data:
 			pageChanged = self.changed
 			self.changed = False
 			if(pageChanged):
-				True				
+				True
 			return self.pageCanvas, pageChanged
 
 		# Called every view changes to this page:
@@ -61,11 +61,11 @@ class Tab_Data:
 		# Consume events passed to this page:
 		def ctrlEvents(self,events):
 			True
-		
+
 	# Generate text for header:
 	def getHeaderText(self):
 		return [self.name, self.rootParent.gpsModule.locality, main.getTimeStr(),]
-	
+
 	# Trigger page-functions
 	def drawPage(self,modeNum):
 		pageCanvas, pageChanged = self.modes[modeNum].drawPage()
@@ -74,21 +74,21 @@ class Tab_Data:
 		self.modes[modeNum].resetPage()
 	def ctrlEvents(self,pageEvents,modeNum):
 		self.modes[modeNum].ctrlEvents(pageEvents)
-	
+
 	def __init__(self, *args, **kwargs):
 		self.parent = args[0]
 		self.rootParent = self.parent.rootParent
 		self.canvas = pygame.Surface((config.WIDTH, config.HEIGHT))
 		self.drawnPageNum = -1
-		
+
 		self.modes = [dataMap.Mode_Map(self,0),dataMap.Mode_Map(self,1),self.Mode_Quests(self),self.Mode_Misc(self),radio.Mode_Radio(self)]
-		
+
 		# Generate footers for mode-pages:
 		self.modeNames = ["","","","",""]
 		for n in range(0,5):
 			self.modeNames[n] = self.modes[n].name
-			
+
 		self.header = headFoot.Header(self)
-		
+
 		# Generate footers for mode-pages:
 		self.footerImgs = headFoot.genFooterImgs(self.modeNames)

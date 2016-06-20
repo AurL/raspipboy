@@ -2,27 +2,27 @@
 #	Neal D Corbett, 2013
 # Configuration data
 
-# Device options 
+# Device options
 #  (These will be automatically be set to 'False' if unavailable)
-USE_INTERNET = True		# Download map/place data via internet connection
-USE_GPS = True			# Use GPS module, accessed via GPSD daemon
+USE_INTERNET = False		# Download map/place data via internet connection
+USE_GPS = False			# Use GPS module, accessed via GPSD daemon
 USE_SOUND = True		# Play sounds via RasPi's current sound-source
-USE_CAMERA = True		# Use RasPi camera-module as V.A.T.S
-USE_SERIAL = True		# Communicate with custom serial-port controller
+USE_CAMERA = False		# Use RasPi camera-module as V.A.T.S
+USE_SERIAL = False		# Communicate with custom serial-port controller
 
-QUICKLOAD = False		# If true, commandline-startup bits aren't rendered
+QUICKLOAD = True		# If true, commandline-startup bits aren't rendered
 FORCE_DOWNLOAD = False	# Don't use cached map-data, if online
 
 # Render screen-objects at this size - smaller is faster
 WIDTH = 320
 HEIGHT = 240
 
-# Address for map's default position: 
+# Address for map's default position:
 #	(used if GPS is inactive)
-defaultPlace = "Washington DC"
+defaultPlace = "Paris"
 
 # Player data:
-PLAYERNAME = 'Niil'
+PLAYERNAME = 'Waleguene'
 PLAYERLEVEL = 33
 
 FPS = 15
@@ -30,12 +30,12 @@ FPS = 15
 import pygame, os
 
 # My Google-API key:
-# (this is limited to only 2000 location requests a day, 
+# (this is limited to only 2000 location requests a day,
 #    so please don't use this key if you're making your own project!)
-gKey = 'AIzaSyB4umXdIUQX7Wu7rT_c4RdYLCKxfYKq5K0'
+gKey = 'AIzaSyB4umXdIssUQX7Wu7rT_c4RdYLCKxfYKq5K0'
 
 
-# Teensy USB serial: symbolic link set up by creating: 
+# Teensy USB serial: symbolic link set up by creating:
 #   /etc/udev/rules.d/99-usb-serial.rules
 # With line:
 #   SUBSYSTEM=="tty", ATTRS{manufacturer}=="Teensyduino", SYMLINK+="teensy"
@@ -61,18 +61,18 @@ if(USE_SERIAL):
 		print ("Init serial: %s" %(SERIALPORT))
 		ser = serial.Serial(SERIALPORT, 9600)
 		ser.timeout=1
-		
+
 		print "  Requesting device identity..."
 		ser.write("\nidentify\n")
-		
+
 		ident = ser.readline()
 		ident = ident.strip()
 		print ("    Value: %s" %(str(ident)))
-		
+
 		if (ident != "PIPBOY"):
-			print "  Pip-Boy controls not found on serial-port!"	
+			print "  Pip-Boy controls not found on serial-port!"
 			#config.USE_SERIAL = False
-		
+
 	except:
 		print ("* Failed to access serial! Ignoring serial port")
 		USE_SERIAL = False
@@ -89,7 +89,7 @@ if USE_CAMERA:
 			return True
 		except:
 			return False
-	
+
 	USE_CAMERA = hasCamera()
 print ("CAMERA: %s" %(USE_CAMERA))
 
@@ -119,7 +119,7 @@ print "(done)"
 # Test internet connection:
 if USE_INTERNET:
 	import urllib2
-	
+
 	def internet_on():
 		try:
 			# Can we access this Google address?
@@ -127,7 +127,7 @@ if USE_INTERNET:
 			return True
 		except urllib2.URLError as err: pass
 		return False
-	
+
 	USE_INTERNET = internet_on()
 print ("INTERNET: %s" %(USE_INTERNET))
 

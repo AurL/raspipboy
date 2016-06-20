@@ -112,29 +112,29 @@ placeTypeIconNames = {
 # Gets list of up to 60 establishments in area:
 def getPlaces(lat,lon,radius=2000,types='establishment'):
 	places = []
-	
+
 	# These search-arguments will show the initial results-page:
 	pageArgs = "location=%s,%s&radius=%s&types=%s" %(lat,lon,radius,types)
 	pageNum = 0
 	while (pageArgs != None):
 		url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?%s&sensor=false&key=%s" %(pageArgs,config.gKey)
 		pageArgs = None
-		
+
 		pageNum += 1
 		#print ("Page %s: %s" %(pageNum, url))
-		
+
 		response = urllib2.urlopen( url )
 		responseBody = response.read()
-		
+
 		body = StringIO.StringIO( responseBody )
 		result = json.load(body)
-		
+
 		if 'results' in result:
 			#print ("Page results: %s" %(len(result['results'])))
 			for thisPlace in result['results']:
 				placeLoc = thisPlace['geometry']['location']
 				placeTypes = thisPlace['types']
-				
+
 				# Get icon for place:
 				iconName = None
 				for thisType in placeTypes:
@@ -144,21 +144,21 @@ def getPlaces(lat,lon,radius=2000,types='establishment'):
 				# Set default if name wasn't found:
 				if (iconName == None):
 					iconName = placeTypeIconNames['DEFAULT']
-				
+
 				placeItem = {'name':thisPlace['name'],'lat':placeLoc['lat'],'lon':placeLoc['lng'],'icon':iconName} #,'types':placeTypes
-				
+
 				places.append(placeItem)
 				print(placeItem)
-			
+
 		# Set loop to download next page - there'll be up to 3 pages, of up to 20 results each:
 		if 'next_page_token' in result:
 			#print "Next page..."
 			# Set up argument to download next page:
 			pageArgs = "pagetoken=%s" %(result['next_page_token'])
-			
+
 			# Pause, as Google delays enabling the next page:
 			time.sleep(2)
-			
+
 	return places
-		
+
 #getPlaces(53.79420270000001,-1.5356686)

@@ -6,9 +6,9 @@ import pygame
 import config
 
 class Mode_Radio:
-	
+
 	changed = True
-	
+
 	def __init__(self, *args, **kwargs):
 		self.parent = args[0]
 		self.rootParent = self.parent.rootParent
@@ -19,7 +19,7 @@ class Mode_Radio:
 		pageChanged = self.changed
 		self.changed = False
 		if(pageChanged):
-			True				
+			True
 		return self.pageCanvas, pageChanged
 
 	# Called every view changes to this page:
