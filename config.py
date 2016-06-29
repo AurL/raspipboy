@@ -9,13 +9,15 @@ USE_GPS = False			# Use GPS module, accessed via GPSD daemon
 USE_SOUND = True		# Play sounds via RasPi's current sound-source
 USE_CAMERA = False		# Use RasPi camera-module as V.A.T.S
 USE_SERIAL = False		# Communicate with custom serial-port controller
+USE_GPIO = False
+GPIO_AVAILABLE = False
 
 QUICKLOAD = True		# If true, commandline-startup bits aren't rendered
 FORCE_DOWNLOAD = False	# Don't use cached map-data, if online
 
 # Render screen-objects at this size - smaller is faster
-WIDTH = 320
-HEIGHT = 240
+WIDTH = 480
+HEIGHT = 320
 
 # Address for map's default position:
 #	(used if GPS is inactive)
@@ -28,6 +30,21 @@ PLAYERLEVEL = 33
 FPS = 15
 
 import pygame, os
+
+# Using GPIO.BCM as mode
+GPIO_ACTIONS = {
+#     4: "module_stats", #GPIO 4
+# 	14: "module_items", #GPIO 14
+# 	15: "module_data", #GPIO 15
+# 	17:	"knob_1", #GPIO 17
+# 	18: "knob_2", #GPIO 18
+# 	7: "knob_3", #GPIO 7
+# 	22: "knob_4", #GPIO 22
+# 	23: "knob_5", #GPIO 27
+# #	31: "dial_up", #GPIO 23
+# 	27: "dial_down" #GPIO 7
+}
+
 
 # My Google-API key:
 # (this is limited to only 2000 location requests a day,
@@ -99,7 +116,7 @@ if not os.path.exists(CACHEPATH):
 	os.makedirs(CACHEPATH)
 
 DRAWCOLOUR = pygame.Color (255, 255, 255)
-TINTCOLOUR = pygame.Color (33, 255, 156)
+TINTCOLOUR = pygame.Color (33, 255, 180)
 SELBOXGREY = 50
 
 EVENTS = {
@@ -165,6 +182,9 @@ print ("SOUND: %s" %(USE_SOUND))
 pygame.font.init()
 kernedFontName = 'fonts/monofonto-kerned.ttf'
 monoFontName = 'fonts/monofonto.ttf'
+FONTS = {}
+for x in range(10, 28):
+	FONTS[x] = pygame.font.Font(kernedFontName, x)
 
 # Scale font-sizes to chosen resolution:
 FONT_SML = pygame.font.Font(kernedFontName, int (HEIGHT * (12.0 / 360)))
@@ -177,3 +197,80 @@ tempImg = MONOFONT.render("X", True, DRAWCOLOUR, (0, 0, 0))
 charHeight = tempImg.get_height()
 charWidth = tempImg.get_width()
 del tempImg
+
+
+SPECIAL = [
+	'Strengh          5',
+	'Perception       8',
+	'Endurance        3',
+	'Charisme         2',
+	'Intelligence     6',
+	'Agility          12',
+	'Luck             8'
+]
+
+# Items [Name, Damage, weight, value, State(CND), icon_path_in_prop_dir]
+WEAPON = [
+	['Big fucking rifle','130', '7', 1158, 20,'556mm(36/232)', 'rifle.png'],
+	['Baseball bat','130', '7', 18, 20,'p382', 'bat.png'],
+	['Tazer','130', '7', 18, 20,'bool', 'tazer.png']
+]
+
+APPAREL = [
+	['Vault 101 suit', 2, 150, 'fancyoutfit.png'],
+	['Steampunk glasses', 2, 150, 'sunglasses.png'],
+	['Steampunk hat', 2, 150, 'hat.png'],
+	['Moon boots', 2, 150, 'fancyoutfit.png']
+]
+
+# Weight, Value, effects
+AIDS = [
+	['Bubble Gum', 1, 1, 'HIT+1  RAD+1' ,'bubblegum.png'],
+	['Stimpack', 0, 75, 'HIT+30 ' ,'stimpack.png'],
+	['Buffout', 0, 20, 'HIT+60 END+3 STR+2'  ,'buffout.png'],
+	['Mentats', 0, 20, 'INT+2 PER+2 CHR+1' ,'mentats.png'],
+	['Nuka Cola',1, 20, 'RAD+3 HIT+2' ,'nukacola.png'],
+	['Psycho', 0, 20, 'DMG +25%' ,'psycho.png'],
+	['RadAway',0, 20, 'RAD-50'  ,'radaway.png'],
+	['Purified Water',1, 20, 'HIT+2' ,'water.png'],
+	['Cram', 1, 5, 'HIT+1 RAD+3' ,'cram.png'],
+	['Jet', 0, 20, 'AP+15' ,'jet.png'],
+]
+
+MISC = [
+	['OnePlus One', 3, 300, 'stimpak.png'],
+	['House keys', 3, 10, 'stimpak.png'],
+	['Bus card', 3, 10, 'stimpak.png']
+]
+
+AMMO = [
+	'9mm ammo         750',
+	'357 magnum       120'
+]
+
+RADIOSTATION = [
+	'Galaxy News Radio',
+	'Radio New Vegas',
+	'Mojave Music'
+]
+
+RADIODIR = [
+	'sounds\\radio\\gnr\\',
+	'sounds\\radio\\rnv\\',
+	'sounds\\radio\\mm\\'
+]
+
+PERK = [
+	['Cowboy', '25 %% more damage when using any revolver, lever-action firearm, dynamite, knife or hatchet', 'cowboy.png'],
+	['Fast Shot', '', 'fastshot.png'],
+	['Weapon Handling', 'Weapon Strength Requirements -2', 'weaponhandling.png'],
+	['Meat of Champions', "The essence of champions flows through your veins. When you cannibalize corpses you temporarily gain Caesar's intelligence, Mr. House's luck, The King's charisma, and President Kimball's strength.", 'meatofchampions.png'],
+	['Rapid Reload', "Rapid Reload allows you to reload all your weapons 25%% faster than normal. This also has the effect of allowing you to switch ammunition types faster.", 'rapidreload.png'],
+	['Swift Learner', 'You are indeed a Swift Learner with this Perk, as each level gives you an additional +5%% bonus whenever you earn experience points. This is best taken early.', 'swiftlearner.png'],
+	['Vigilant Recycler', "Waste not, want not. When you use Energy Weapons, you are more likely to recover drained ammunition. You also have more efficient recycling recipes available at the wasteland's workbenches.", 'vigilantrecycler.png']
+]
+
+SKILL = [
+	#['Computer Whiz', 'Can make one extra attempt to hack a locked-down terminal', 'computerwiz.png']
+]
+# OBJECTS

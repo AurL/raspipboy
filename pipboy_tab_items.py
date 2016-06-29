@@ -6,20 +6,34 @@ import pygame
 
 import config
 import pipboy_headFoot as headFoot
+from pipboy_ui import SelectableList, ItemView
 
+#Temp
+items = {
+	"Aid": [config.AIDS, [1,1,3], ['WG', 'VAL', 'EFFECT'], 'images\\art\\aids\\'],
+	"Weapons": [config.WEAPON, [1, 1, 1, 1, 2], ['DAM', 'WG', 'VAL', 'CND', ''], 'images\\art\\weapon\\'],
+	"Apparel": [config.APPAREL, [1,1,3], ['WG', 'VAL', 'EFFECT'], 'images\\art\\apparel\\'],
+	"Misc": [config.MISC, [1,1,3], ['WG', 'VAL', 'EFFECT'], 'images\\art\\misc\\'],
+	"Ammo": [config.AIDS, [1,1,3], ['WG', 'VAL', 'EFFECT'], 'images\\art\\aids\\'],
+}
 class Tab_Items:
 
 	name = "ITEMS"
-	modeNames = ["Weapons","Apparel","Aid","Misc","Ammo"]
+	modeNames = ["Aid","Weapons","Apparel","Misc","Ammo"]
 
 	class Mode_Items:
 
 		changed = True
 
-		def __init__(self, *args, **kwargs):
-			self.parent = args[0]
+		def __init__(self, parent, name, *args, **kwargs):
+			print(name)
+			elements = items[name]
+			self.parent = parent
 			self.rootParent = self.parent.rootParent
 			self.pageCanvas = pygame.Surface((config.WIDTH, config.HEIGHT))
+			self.menu = SelectableList(self.pageCanvas, (20,40), (200, 245), [elt[0] for elt in elements[0]], [], True)
+			self.view = ItemView(self.pageCanvas, (233, 40), (245, 245), elements[0], elements[1], elements[2],elements[3])
+			self.ui_elements = [self.menu]
 
 		def drawPage(self):
 			pageChanged = self.changed
@@ -31,9 +45,17 @@ class Tab_Items:
 		# Called every view changes to this page:
 		def resetPage(self):
 			True
+
 		# Consume events passed to this page:
 		def ctrlEvents(self,events):
-			True
+			for elt in self.ui_elements:
+				if hasattr(elt, "handle_events"):
+					elt.handle_events(events)
+					if hasattr(elt, "hasChanged"):
+						if elt.hasChanged:
+							# update view
+							self.view.set_element(elt.selected)
+			self.changed = True
 
 	# Generate text for header:
 	def getHeaderText(self):
@@ -56,8 +78,9 @@ class Tab_Items:
 		self.drawnPageNum = -1
 
 		# Item-pages all use the same class instance:
-		self.itemPage = self.Mode_Items(self)
-		self.modes = [self.itemPage,self.itemPage,self.itemPage,self.itemPage,self.itemPage]
+		# self.itemPage = self.Mode_Items(self)
+		# self.modes = [self.itemPage,self.itemPage,self.itemPage,self.itemPage,self.itemPage]
+		self.modes = [self.Mode_Items(self, 'Aid'), self.Mode_Items(self, 'Weapons'), self.Mode_Items(self, 'Apparel'), self.Mode_Items(self, 'Misc'), self.Mode_Items(self, 'Ammo'), ]
 
 		for n in range(0,5):
 			self.modes[n].pageNum = n

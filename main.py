@@ -54,7 +54,8 @@ class Engine:
 
 		# Don't show mouse-pointer:
 		pygame.mouse.set_visible(0)
-		pygame.display.set_mode(self.screenSize, pygame.FULLSCREEN)
+		#pygame.display.set_mode(self.screenSize, pygame.FULLSCREEN)
+		pygame.display.set_mode((480, 350), pygame.RESIZABLE )
 
 		# Block queuing for unused events:
 		pygame.event.set_blocked(None)
@@ -68,11 +69,13 @@ class Engine:
 		if config.USE_CAMERA:
 			self.tabs = (Tab_Stats(self), VATS(self), Tab_Data(self))
 		else:
-			self.tabs = (Tab_Stats(self), Tab_Items(self), Tab_Data(self))
+			self.tabs = (Tab_Items(self),Tab_Data(self), Tab_Stats(self))
 
 		self.currentTab = self.tabs[self.tabNum]
 
-		self.screen = pygame.display.set_mode(self.screenSize)
+	    #self.screen = pygame.display.set_mode(self.screenSize)
+		self.screenSize = (480, 320)
+		self.screen = pygame.display.set_mode((480, 320))
 
 		self.background = config.IMAGES["background"]
 		self.background = pygame.transform.smoothscale(self.background, self.canvasSize)
@@ -207,6 +210,21 @@ class Engine:
 		self.rootParent.worldMapPage.drawPage()
 		if config.USE_SOUND:
 			config.SOUNDS["tapestop"].play()
+		#Include this in command line
+		try:
+			import RPi.GPIO as GPIO
+			GPIO.setmode(GPIO.BCM)
+			config.GPIO_AVAILABLE = True
+		except Exception as e:
+			print("GPIO UNAVAILABLE {}".format(e))
+			config.GPIO_AVAILABLE = False
+
+		if config.USE_GPIO and config.GPIO_AVAILABLE:
+			for pin in config.GPIO_ACTIONS.keys():
+				print('Intialising pin {} as action {}'.format(pin, config.GPIO_ACTIONS[pin]))
+				GPIO.setup(pin, GPIO.IN)
+				self.gpio_actions[pin] = config.GPIO_ACTIONS[pin]
+
 
 		cmdLine.printText(">PIP-BOY.INIT")
 
@@ -471,6 +489,9 @@ class Engine:
 						moveVals[2] += 1
 					elif event.key == pygame.K_DOWN: # List down
 						moveVals[2] -= 1
+					elif event.key == pygame.K_SPACE:
+						pageEvents.append('sel')
+
 
 			if (moveVals != [0,0,0]):
 				pageEvents.append(moveVals)

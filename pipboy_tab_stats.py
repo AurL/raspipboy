@@ -7,6 +7,7 @@ from pygame.locals import *
 
 import config
 import pipboy_headFoot as headFoot
+from pipboy_ui import SelectableList, ItemView
 
 class Tab_Stats:
 
@@ -344,6 +345,9 @@ class Tab_Stats:
 			self.rootParent = self.parent.rootParent
 			self.name = "S.P.E.C.I.A.L."
 			self.pageCanvas = pygame.Surface((config.WIDTH, config.HEIGHT))
+			self.menu = SelectableList(self.pageCanvas, (20,40), (200, 245), [p[0] for p in config.PERK], [], True)
+			self.view = ItemView(self.pageCanvas, (233, 40), (245, 245), config.PERK, [4], [''], 'images\\art\\perks\\')
+			self.ui_elements = [self.menu]
 
 		def drawPage(self):
 			pageChanged = self.changed
@@ -357,7 +361,14 @@ class Tab_Stats:
 			True
 		# Consume events passed to this page:
 		def ctrlEvents(self,events):
-			True
+			for elt in self.ui_elements:
+				if hasattr(elt, "handle_events"):
+					elt.handle_events(events)
+					if hasattr(elt, "hasChanged"):
+						if elt.hasChanged:
+							# update view
+							self.view.set_element(elt.selected)
+			self.changed = True
 
 	class Mode_Skills:
 
@@ -368,6 +379,9 @@ class Tab_Stats:
 			self.rootParent = self.parent.rootParent
 			self.name = "Skills"
 			self.pageCanvas = pygame.Surface((config.WIDTH, config.HEIGHT))
+			self.menu = SelectableList(self.pageCanvas, (20,40), (200, 245), [p[0] for p in config.PERK], [], True)
+			self.view = ItemView(self.pageCanvas, (233, 40), (245, 245), config.PERK, [4], [''], 'images\\art\\perks\\')
+			self.ui_elements = [self.menu]
 
 		def drawPage(self):
 			pageChanged = self.changed
@@ -381,7 +395,14 @@ class Tab_Stats:
 			True
 		# Consume events passed to this page:
 		def ctrlEvents(self,events):
-			True
+			for elt in self.ui_elements:
+				if hasattr(elt, "handle_events"):
+					elt.handle_events(events)
+					if hasattr(elt, "hasChanged"):
+						if elt.hasChanged:
+							# update view
+							self.view.set_element(elt.selected)
+			self.changed = True
 
 	class Mode_Perks:
 
@@ -392,6 +413,9 @@ class Tab_Stats:
 			self.rootParent = self.parent.rootParent
 			self.name = "Perks"
 			self.pageCanvas = pygame.Surface((config.WIDTH, config.HEIGHT))
+			self.menu = SelectableList(self.pageCanvas, (20,40), (200, 245), [p[0] for p in config.PERK], [], True)
+			self.view = ItemView(self.pageCanvas, (233, 40), (245, 245), config.PERK, [4], [''], 'images\\art\\perks\\')
+			self.ui_elements = [self.menu]
 
 		def drawPage(self):
 			pageChanged = self.changed
@@ -405,7 +429,15 @@ class Tab_Stats:
 			True
 		# Consume events passed to this page:
 		def ctrlEvents(self,events):
-			True
+			for elt in self.ui_elements:
+				if hasattr(elt, "handle_events"):
+					elt.handle_events(events)
+					if hasattr(elt, "hasChanged"):
+						if elt.hasChanged:
+							# update view
+							self.view.set_element(elt.selected)
+			self.changed = True
+
 	class Mode_General:
 
 		changed = True
@@ -415,6 +447,9 @@ class Tab_Stats:
 			self.rootParent = self.parent.rootParent
 			self.name = "General"
 			self.pageCanvas = pygame.Surface((config.WIDTH, config.HEIGHT))
+			self.menu = SelectableList(self.pageCanvas, (20,40), (200, 245), [p[0] for p in config.PERK], [], True)
+			self.view = ItemView(self.pageCanvas, (233, 40), (245, 245), config.PERK, [4], [''], 'images\\art\\perks\\')
+			self.ui_elements = [self.menu]
 
 		def drawPage(self):
 			pageChanged = self.changed
@@ -426,9 +461,17 @@ class Tab_Stats:
 		# Called every view changes to this page:
 		def resetPage(self):
 			True
+
 		# Consume events passed to this page:
 		def ctrlEvents(self,events):
-			True
+			for elt in self.ui_elements:
+				if hasattr(elt, "handle_events"):
+					elt.handle_events(events)
+					if hasattr(elt, "hasChanged"):
+						if elt.hasChanged:
+							# update view
+							self.view.set_element(elt.selected)
+			self.changed = True
 
 
 	# Generate text for header:

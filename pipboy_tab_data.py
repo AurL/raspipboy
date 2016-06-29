@@ -81,7 +81,7 @@ class Tab_Data:
 		self.canvas = pygame.Surface((config.WIDTH, config.HEIGHT))
 		self.drawnPageNum = -1
 
-		self.modes = [dataMap.Mode_Map(self,0),dataMap.Mode_Map(self,1),self.Mode_Quests(self),self.Mode_Misc(self),radio.Mode_Radio(self)]
+		self.modes = [radio.Mode_Radio(self),dataMap.Mode_Map(self,0),dataMap.Mode_Map(self,1),self.Mode_Quests(self),self.Mode_Misc(self)]
 
 		# Generate footers for mode-pages:
 		self.modeNames = ["","","","",""]
